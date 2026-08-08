@@ -1,0 +1,9 @@
+{
+  "short_name": "FarmaTrade",
+  "name": "FarmaTrade",
+  "icons": [],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#2f6f3a",
+  "background_color": "#ffffff"
+}

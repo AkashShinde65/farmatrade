@@ -1,0 +1,164 @@
+{
+  "info": {
+    "name": "FarmaTrade Auth Service",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "P1 Auth Service collection using mock data only. No real secrets or generated tokens are included."
+  },
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/actuator/health"
+      }
+    },
+    {
+      "name": "JWKS",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/.well-known/jwks.json"
+      }
+    },
+    {
+      "name": "Register Farmer",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"fullName\": \"Farmer One\",\n  \"email\": \"{{farmerEmail}}\",\n  \"mobile\": \"9000000001\",\n  \"password\": \"{{password}}\",\n  \"aadhaar\": \"900000000002\"\n}"
+        },
+        "url": "{{baseUrl}}/api/auth/register/farmer",
+        "description": "Public Farmer registration. The Aadhaar-format value is mock checksum-valid data."
+      }
+    },
+    {
+      "name": "Register Buyer",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"fullName\": \"Buyer One\",\n  \"email\": \"{{buyerEmail}}\",\n  \"mobile\": \"9000000002\",\n  \"password\": \"{{password}}\",\n  \"aadhaar\": \"911111111118\"\n}"
+        },
+        "url": "{{baseUrl}}/api/auth/register/buyer"
+      }
+    },
+    {
+      "name": "Login Farmer",
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "if (pm.response.code === 200) {",
+            "  pm.environment.set('farmerToken', pm.response.json().accessToken);",
+            "}"
+          ]
+        }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{farmerEmail}}\",\n  \"password\": \"{{password}}\"\n}"
+        },
+        "url": "{{baseUrl}}/api/auth/login/farmer"
+      }
+    },
+    {
+      "name": "Login Buyer",
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "if (pm.response.code === 200) {",
+            "  pm.environment.set('buyerToken', pm.response.json().accessToken);",
+            "}"
+          ]
+        }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{buyerEmail}}\",\n  \"password\": \"{{password}}\"\n}"
+        },
+        "url": "{{baseUrl}}/api/auth/login/buyer"
+      }
+    },
+    {
+      "name": "Login Admin",
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "if (pm.response.code === 200) {",
+            "  pm.environment.set('adminToken', pm.response.json().accessToken);",
+            "}"
+          ]
+        }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{adminEmail}}\",\n  \"password\": \"{{password}}\"\n}"
+        },
+        "url": "{{baseUrl}}/api/auth/login/admin"
+      }
+    },
+    {
+      "name": "Current Profile",
+      "request": {
+        "method": "GET",
+        "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{farmerToken}}", "type": "string" }] },
+        "url": "{{baseUrl}}/api/auth/me"
+      }
+    },
+    {
+      "name": "Admin Register Admin",
+      "request": {
+        "method": "POST",
+        "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{adminToken}}", "type": "string" }] },
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"fullName\": \"Admin Two\",\n  \"email\": \"admin2@example.invalid\",\n  \"mobile\": \"9000000003\",\n  \"password\": \"{{password}}\",\n  \"aadhaar\": \"922222222224\"\n}"
+        },
+        "url": "{{baseUrl}}/api/auth/register/admin"
+      }
+    },
+    {
+      "name": "Admin List Users",
+      "request": {
+        "method": "GET",
+        "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{adminToken}}", "type": "string" }] },
+        "url": "{{baseUrl}}/api/admin/users?page=0&size=20&search=example"
+      }
+    },
+    {
+      "name": "Admin Disable User",
+      "request": {
+        "method": "PATCH",
+        "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{adminToken}}", "type": "string" }] },
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"enabled\": false\n}" },
+        "url": "{{baseUrl}}/api/admin/users/{{userId}}/status"
+      }
+    },
+    {
+      "name": "Admin Audit Events",
+      "request": {
+        "method": "GET",
+        "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{adminToken}}", "type": "string" }] },
+        "url": "{{baseUrl}}/api/admin/audit-events?page=0&size=20"
+      }
+    }
+  ]
+}

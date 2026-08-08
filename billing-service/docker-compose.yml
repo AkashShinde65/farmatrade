@@ -1,0 +1,63 @@
+# Local dev MySQL + app for billing-service. Did not exist before this fix.
+# Host port note: 3306 is commonly taken by a natively-installed MySQL; 3307 is auth-service's,
+# 3308 is logistics-service's, 3311 is bidding-service's -- this maps billing's MySQL to 3309,
+# matching the port table already agreed for the fleet.
+#
+# Joins the shared "farmatrade-net" external network so this container can resolve auth-service
+# (for JWKS) and receive calls from bidding-service by hostname. Create the network once before
+# starting any service: docker network create farmatrade-net
+services:
+  mysql:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: farmatrade_billing
+    ports:
+      - "3309:3306"
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$${MYSQL_ROOT_PASSWORD} --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - billing-mysql-data:/var/lib/mysql
+    # Deliberately NOT on farmatrade-net: every service's DB container was named "mysql" and all
+    # joined the same shared network, so Docker's embedded DNS returned multiple IPs for the
+    # hostname "mysql" once more than one stack was up at once -- verified empirically via
+    # `docker run --network farmatrade-net busybox nslookup mysql`, which returned three different
+    # container IPs (logistics/billing/lot), and a real failure where this service's own app
+    # connected to the wrong "mysql" and got "Unknown database 'farmatrade_billing'". The app
+    # container only needs to reach ITS OWN db, via the project-private default network Compose
+    # creates automatically for this file.
+
+  billing-service:
+    build: .
+    image: farmatrade-billing-service:dev
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      SERVER_PORT: 8085
+      DB_URL: jdbc:mysql://mysql:3306/farmatrade_billing?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      DB_USERNAME: root
+      DB_PASSWORD: root
+      AUTH_JWKS_URI: http://auth-service:8081/.well-known/jwks.json
+      AUTH_JWT_ISSUER: farmatrade-auth-service
+      AUTH_JWT_AUDIENCE: farmatrade-api
+      RAZORPAY_KEY_ID: ${RAZORPAY_KEY_ID:?RAZORPAY_KEY_ID must be set}
+      RAZORPAY_KEY_SECRET: ${RAZORPAY_KEY_SECRET:?RAZORPAY_KEY_SECRET must be set}
+      RAZORPAY_WEBHOOK_SECRET: ${RAZORPAY_WEBHOOK_SECRET:?RAZORPAY_WEBHOOK_SECRET must be set}
+      # Must match the value logistics-service (and bidding-service) send as INTERNAL_SERVICE_TOKEN.
+      INTERNAL_SERVICE_TOKEN: ${INTERNAL_SERVICE_TOKEN:?INTERNAL_SERVICE_TOKEN must be set and must match logistics-service/bidding-service}
+    ports:
+      - "8085:8085"
+    networks:
+      - farmatrade-net
+      - default
+
+volumes:
+  billing-mysql-data:
+
+networks:
+  farmatrade-net:
+    external: true

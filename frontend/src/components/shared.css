@@ -1,0 +1,597 @@
+/* Shared component styles, matched to the bolt.host reference's actual stylesheet.
+   One deliberate departure: no @keyframes / looping animation anywhere (e.g. no spinning
+   loader) — the user explicitly does not want continuously-moving elements. Short,
+   even the short interaction-only hover transitions have been removed — hover states change
+   instantly, no transition property anywhere in this file. */
+
+.container {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 0 var(--space-3);
+}
+
+.page {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: var(--space-4) var(--space-3) 48px;
+}
+
+.back-button-row {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: var(--space-3) var(--space-3) 0;
+}
+
+.back-button {
+  padding: 6px 12px;
+  font-size: 0.8125rem;
+}
+
+.page-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+@media (min-width: 640px) {
+  .page-header {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+}
+
+.page-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--gray-900);
+  letter-spacing: -0.02em;
+}
+
+.page-subtitle {
+  font-size: 0.875rem;
+  color: var(--gray-500);
+  margin-top: var(--space-1);
+}
+
+/* Navbar — solid green, sticky, matching the reference exactly */
+
+.navbar {
+  background: var(--green);
+  color: #fff;
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.navbar-inner {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 0 var(--space-3);
+  height: 3.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.navbar-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: 600;
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
+  color: #fff;
+}
+
+.navbar-brand svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.navbar-links a {
+  padding: 6px 10px;
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  color: #ecfdf5;
+}
+
+.navbar-links a:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.navbar-user {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding-left: 12px;
+  margin-left: 4px;
+  border-left: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: 0.875rem;
+  color: #ecfdf5;
+}
+
+/* Footer */
+
+.footer {
+  border-top: 1px solid var(--gray-200);
+  background: #fff;
+  padding: var(--space-3) 0;
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--gray-400);
+  margin-top: var(--space-5);
+}
+
+/* Buttons */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 8px 16px;
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: none;
+  background: none;
+  text-decoration: none;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--green);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: var(--green-dark);
+}
+
+.btn-secondary {
+  background: #fff;
+  color: var(--gray-700);
+  border: 1px solid var(--gray-300);
+}
+
+.btn-secondary:hover {
+  background: var(--gray-100);
+}
+
+.btn-danger {
+  background: var(--red-600);
+  color: #fff;
+}
+
+.btn-danger:hover {
+  background: var(--red-700);
+}
+
+/* Plain, un-classed links on the public nav (Login) render as ghost buttons */
+.navbar-links a.btn,
+.navbar-actions a:not(.btn) {
+  color: #ecfdf5;
+}
+
+/* Forms */
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  max-width: 420px;
+}
+
+.field {
+  margin-bottom: var(--space-3);
+}
+
+.field-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--gray-700);
+  margin-bottom: var(--space-1);
+}
+
+.field-hint {
+  margin-top: var(--space-1);
+  font-size: 0.75rem;
+  color: var(--gray-500);
+}
+
+.input,
+.select,
+.textarea {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 0.875rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--gray-300);
+  background: #fff;
+  color: var(--gray-900);
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+  outline: none;
+  border-color: transparent;
+  box-shadow: 0 0 0 2px var(--green);
+}
+
+.form-error {
+  color: var(--red-600);
+  font-size: 0.875rem;
+}
+
+.role-tabs {
+  display: flex;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.role-tabs button {
+  flex: 1;
+  padding: var(--space-2);
+  border: 1px solid var(--gray-300);
+  background: #fff;
+  border-radius: var(--radius);
+}
+
+.role-tabs button.active {
+  background: var(--green);
+  color: #fff;
+  border-color: var(--green);
+}
+
+/* Card */
+
+.card {
+  background: #fff;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--gray-200);
+  box-shadow: var(--shadow-sm);
+}
+
+.card-body {
+  padding: 1.25rem;
+}
+
+/* Table */
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.data-table thead {
+  background: var(--gray-100);
+}
+
+.data-table th {
+  text-align: left;
+  padding: 12px 16px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--gray-500);
+}
+
+.data-table td {
+  padding: 12px 16px;
+  border-top: 1px solid var(--gray-100);
+}
+
+.data-table tbody tr:hover {
+  background: var(--gray-50);
+}
+
+/* Status badge */
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  border: 1px solid;
+  color: var(--gray-700);
+  border-color: var(--gray-300);
+  background: var(--gray-100);
+}
+
+.status-badge--success {
+  background: var(--emerald-100);
+  color: var(--emerald-800);
+  border-color: var(--emerald-300);
+}
+
+.status-badge--warning {
+  background: var(--amber-100);
+  color: var(--amber-dark);
+  border-color: var(--amber-300);
+}
+
+.status-badge--danger {
+  background: var(--red-100);
+  color: var(--red-800);
+  border-color: var(--red-300);
+}
+
+/* Stat tiles */
+
+.stat-tile-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+@media (min-width: 640px) {
+  .stat-tile-row {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.stat-tile {
+  background: #fff;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--gray-200);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-3);
+}
+
+.stat-tile-label {
+  color: var(--gray-500);
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stat-tile-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--gray-900);
+  margin-top: var(--space-1);
+}
+
+/* Lot card grid */
+
+.lot-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-3);
+}
+
+.lot-card {
+  background: #fff;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--gray-200);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  color: var(--gray-900);
+}
+
+.lot-card h3 {
+  margin: 0;
+}
+
+.lot-card-meta {
+  color: var(--gray-500);
+  font-size: 0.9rem;
+}
+
+/* Weather widget */
+
+.weather-widget {
+  border-top: 1px solid var(--gray-100);
+  padding-top: var(--space-2);
+  font-size: 0.9rem;
+}
+
+.weather-widget-current {
+  display: flex;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+.weather-forecast {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.weather-forecast-day {
+  color: var(--gray-500);
+}
+
+/* Landing (home) page — matches the reference's soft green-to-white gradient wash */
+
+.landing {
+  min-height: calc(100vh - 3.5rem);
+  background: linear-gradient(to bottom, var(--green-50), #fff, #fff);
+}
+
+.landing-hero {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 4rem var(--space-3) 3rem;
+}
+
+.landing-hero-grid {
+  display: grid;
+  gap: var(--space-5);
+  align-items: center;
+}
+
+@media (min-width: 1024px) {
+  .landing-hero-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.landing-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--green);
+  background: var(--green-100);
+  padding: 4px 10px;
+  border-radius: 9999px;
+}
+
+.landing-pill svg {
+  width: 14px;
+  height: 14px;
+}
+
+.landing-h1 {
+  margin-top: var(--space-3);
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--gray-900);
+  line-height: 1.1;
+}
+
+@media (min-width: 640px) {
+  .landing-h1 {
+    font-size: 3rem;
+  }
+}
+
+.landing-lead {
+  margin-top: var(--space-3);
+  font-size: 1.125rem;
+  color: var(--gray-600);
+  line-height: 1.6;
+  max-width: 46ch;
+}
+
+.landing-cta {
+  margin-top: var(--space-4);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.landing-image {
+  width: 100%;
+  height: 360px;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  object-fit: cover;
+  display: block;
+}
+
+.landing-features {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 0 var(--space-3) 4rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--space-3);
+}
+
+.feature-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--green-100);
+  color: var(--green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-3);
+}
+
+.card-body h3 {
+  font-size: 1.05rem;
+  margin: 0 0 var(--space-1) 0;
+}
+
+.card-body p {
+  margin: 0;
+  color: var(--gray-500);
+  font-size: 0.9rem;
+}
+
+/* Auth pages (login/register) */
+
+.auth-page {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-5) var(--space-3);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+}
+
+/* Loading / empty states — static text, no spin/animation */
+
+.loading-text,
+.empty-text {
+  color: var(--gray-500);
+}
+
+.empty {
+  text-align: center;
+  padding: 3rem var(--space-3);
+}
+
+.empty-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--gray-700);
+}
+
+.empty-msg {
+  font-size: 0.875rem;
+  color: var(--gray-500);
+  margin-top: var(--space-1);
+}

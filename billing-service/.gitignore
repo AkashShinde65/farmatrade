@@ -1,0 +1,11 @@
+target/
+*.log
+logs/
+*.bak
+*.tmp
+*.swp
+.idea/
+.vscode/
+*.iml
+invoice.pdf
+.DS_Store

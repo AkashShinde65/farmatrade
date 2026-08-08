@@ -1,0 +1,115 @@
+/* Design tokens matched to the bolt.host reference (farmatrade-frontend-j6aw.bolt.host) —
+   pulled from its actual published stylesheet, not guessed. */
+:root {
+  --green: #2f6f3a;
+  --green-dark: #234f2a;
+  --green-50: #f0f7f1;
+  --green-100: #d9ebdd;
+
+  --amber: #c8841c;
+  --amber-dark: #92400e;
+  --amber-50: #fffbeb;
+  --amber-100: #fef3c7;
+  --amber-300: #fcd34d;
+  --amber-700: #b45309;
+
+  --sky-50: #f0f9ff;
+  --sky-100: #e0f2fe;
+  --sky-300: #7dd3fc;
+  --sky-700: #0369a1;
+  --sky-800: #075985;
+
+  --emerald-50: #ecfdf5;
+  --emerald-100: #d1fae5;
+  --emerald-300: #6ee7b7;
+  --emerald-700: #047857;
+  --emerald-800: #065f46;
+
+  --red-50: #fef2f2;
+  --red-100: #fee2e2;
+  --red-300: #fca5a5;
+  --red-600: #dc2626;
+  --red-700: #b91c1c;
+  --red-800: #991b1b;
+
+  --gray-50: #f6f7f5;
+  --gray-100: #f1f3f0;
+  --gray-200: #e5e7e3;
+  --gray-300: #d1d5cc;
+  --gray-400: #9ca3a0;
+  --gray-500: #6b7268;
+  --gray-600: #4b5147;
+  --gray-700: #3a3f37;
+  --gray-800: #272b25;
+  --gray-900: #1c1f1a;
+  --white: #ffffff;
+
+  --radius: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 32px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  background: var(--gray-50);
+  color: var(--gray-900);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  line-height: 1.2;
+}
+
+p {
+  margin: 0;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+input,
+select,
+textarea {
+  font-family: inherit;
+  font-size: 1rem;
+}

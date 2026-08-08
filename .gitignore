@@ -1,0 +1,26 @@
+# Environment files
+.env
+.env.*
+!.env.example
+
+# JavaScript
+node_modules/
+build/
+dist/
+
+# Java / Maven
+**/target/
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+
+# Logs
+*.log
+
+# Secrets
+*.pem
+secrets/

@@ -1,0 +1,72 @@
+version: "3.9"
+
+services:
+
+  bidding-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: farmatrade-bidding-service
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      DB_HOST: mysql-bidding
+      DB_PORT: 3306
+      DB_NAME: farmatrade_bidding
+      DB_USERNAME: ${DB_USERNAME:-bidding_user}
+      DB_PASSWORD: ${DB_PASSWORD:-bidding_pass}
+      AUTH_JWKS_URI: ${AUTH_JWKS_URI:-http://auth-service:8081/.well-known/jwks.json}
+      AUTH_ISSUER_URI: ${AUTH_ISSUER_URI:-farmatrade-auth-service}
+      LOT_SERVICE_BASE_URL: ${LOT_SERVICE_BASE_URL:-http://lot-service:8082}
+      LOGISTICS_SERVICE_BASE_URL: ${LOGISTICS_SERVICE_BASE_URL:-http://logistics-service:8084}
+      # STOP-GAP shared secret for service-to-service calls - see
+      # WebClientConfig Javadoc. Must match the value Lot Service,
+      # Logistics Service, and Billing Service expect on their internal endpoints.
+      INTERNAL_SERVICE_TOKEN: ${INTERNAL_SERVICE_TOKEN:?INTERNAL_SERVICE_TOKEN must be set and must match lot-service/billing-service}
+    depends_on:
+      mysql-bidding:
+        condition: service_healthy
+    networks:
+      - farmatrade-net
+    restart: unless-stopped
+
+  mysql-bidding:
+    image: mysql:8.0
+    container_name: farmatrade-mysql-bidding
+    environment:
+      MYSQL_DATABASE: farmatrade_bidding
+      MYSQL_USER: ${DB_USERNAME:-bidding_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-bidding_pass}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root_pass}
+    ports:
+      # NOTE: billing-service's MySQL is already on host port 3309 - do
+      # not reuse it. 3311 is bidding-service's assigned host port for
+      # local/dev access to its own MySQL container. If the team adopts
+      # a formal port-allocation doc, update this to match it.
+      - "3311:3306"
+    volumes:
+      - mysql-bidding-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD:-root_pass}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    networks:
+      - farmatrade-net
+    restart: unless-stopped
+
+networks:
+  # Shared network joined by every FarmaTrade microservice + its
+  # datastore, so bidding-service can resolve auth-service, lot-service,
+  # billing-service (and vice versa) by container hostname. This network
+  # is created ONCE, outside this file (e.g. `docker network create
+  # farmatrade-net`, or by whichever compose file is designated as the
+  # canonical owner of it) - bidding-service only joins it, it does not
+  # own or create it.
+  farmatrade-net:
+    external: true
+
+volumes:
+  mysql-bidding-data:

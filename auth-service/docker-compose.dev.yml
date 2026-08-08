@@ -1,0 +1,71 @@
+# Joins the shared "farmatrade-net" external network so logistics-service and billing-service can
+# resolve this container by hostname for JWKS validation. Create the network once before starting
+# any service: docker network create farmatrade-net
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: farmatrade_auth_db
+      MYSQL_USER: farmatrade_auth_user
+      MYSQL_PASSWORD: replace-with-dev-password
+      MYSQL_ROOT_PASSWORD: replace-with-root-password
+    ports:
+      - "3307:3306"
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$${MYSQL_ROOT_PASSWORD} --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - auth-mysql-data:/var/lib/mysql
+    # Deliberately NOT on farmatrade-net: every service's DB container was named "mysql" and all
+    # joined the same shared network, so Docker's embedded DNS returned multiple IPs for the
+    # hostname "mysql" once more than one stack was up at once -- verified empirically via
+    # `docker run --network farmatrade-net busybox nslookup mysql`, which returned three different
+    # container IPs (logistics/billing/lot), and a real failure where billing-service's app
+    # connected to the wrong "mysql" and got "Unknown database 'farmatrade_billing'". The app
+    # container only needs to reach ITS OWN db, via the project-private default network Compose
+    # creates automatically for this file.
+
+  auth-service:
+    build: .
+    image: farmatrade-auth-service:dev
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      SERVER_PORT: 8081
+      DB_URL: jdbc:mysql://mysql:3306/farmatrade_auth_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      DB_USERNAME: farmatrade_auth_user
+      DB_PASSWORD: replace-with-dev-password
+      AUTH_RSA_PRIVATE_KEY_FILE: /run/secrets/farmatrade_auth_private_key.pem
+      AUTH_JWT_KID: farmatrade-auth-rs256-1
+      AUTH_JWT_ISSUER: farmatrade-auth-service
+      AUTH_JWT_AUDIENCE: farmatrade-api
+      AUTH_JWT_ACCESS_TOKEN_MINUTES: 15
+      AUTH_CORS_ALLOWED_ORIGINS: http://localhost:3000,http://localhost:5173
+      AUTH_LOGIN_MAX_FAILED_ATTEMPTS: 5
+      AUTH_LOGIN_LOCK_MINUTES: 15
+      INITIAL_ADMIN_NAME: akash shinde
+      INITIAL_ADMIN_EMAIL: luckakash65@gmail.com
+      INITIAL_ADMIN_MOBILE: "9673294751"
+      INITIAL_ADMIN_PASSWORD: "9673294751@aA"
+      INITIAL_ADMIN_AADHAAR: "900000000002"
+    secrets:
+      - farmatrade_auth_private_key.pem
+    ports:
+      - "8081:8081"
+    networks:
+      - farmatrade-net
+      - default
+
+secrets:
+  farmatrade_auth_private_key.pem:
+    file: ./secrets/dev-auth-private.pem
+
+volumes:
+  auth-mysql-data:
+
+networks:
+  farmatrade-net:
+    external: true
