@@ -1,76 +1,492 @@
-# FarmaTrade
-🌾 FarmaTrade
+# 🌾 FarmaTrade
 
-FarmaTrade is an online marketplace that connects farmers and buyers. Farmers list their crops, buyers bid on them like an auction, and the app takes care of payment, delivery, and cold storage — all in one place.
+**FarmaTrade** is an online agricultural marketplace that connects **farmers and buyers directly**. Farmers can list crops, buyers can participate in live auctions, and the platform manages **payments, delivery, cold storage, and invoicing** in one place.
 
-Think of it like an "OLX for farm crops," but with live bidding, delivery booking, and automatic invoices built in.
+Think of it as an **"OLX for farm crops"**, enhanced with live bidding, logistics management, and automated billing.
 
-🧩 What this project is made of
+---
 
-FarmaTrade is not one single app. It is split into small services, where each service does one job. This style is called microservices. All services talk to each other over the network.
+## 🧩 Microservices Architecture
 
-Service	What it does	Port
-auth-service	Handles login, signup, and user roles (Farmer / Buyer / Admin). Every other service trusts this one to say "who is this user?"	8081
-lot-service	Lets farmers create a "lot" (a batch of crop for sale) with details like quantity, price, and market rate.	8082
-bidding-service	Runs the live auction. Buyers place bids in real time using WebSockets (like a live chat, but for bids).	8083
-logistics-service	Books trucks to move the crop and finds cold storage if needed. Also checks weather risk.	8084
-billing-service	Creates invoices and handles online payment (via Razorpay) once a sale is done.	8085
-frontend	The website farmers and buyers actually use. Built with React.	3000
+FarmaTrade is built using a **microservices architecture**, where each service is responsible for a specific business function. The services communicate with each other over a shared Docker network.
 
-Each backend service is a separate Spring Boot (Java) application with its own database. The frontend is a separate React application.
+* **auth-service — Port 8081**
 
-🔑 How a user's identity works
-A user logs in through auth-service and gets a secure token (JWT).
-Every other service checks that token to know who is calling and what role they have (FARMER, BUYER, or ADMIN).
-No other service is allowed to look directly into the auth database — they only trust the token.
+  * Handles authentication and user registration.
+  * Manages JWT tokens and user roles.
+  * Supports **Farmer, Buyer, and Admin** roles.
 
-This keeps login logic in one place instead of repeating it everywhere.
+* **lot-service — Port 8082**
 
-🔄 How a typical sale flows
-A farmer creates a lot in lot-service (e.g., "500kg tomatoes, ₹20/kg").
-bidding-service opens an auction for that lot. Buyers place live bids.
-When bidding ends, the winning bid is recorded and the lot is marked sold.
-billing-service generates an invoice and collects payment from the buyer.
-logistics-service arranges a truck (and cold storage if needed) to deliver the crop to the buyer.
-🛠️ Tech stack
-Backend: Java, Spring Boot, Spring Security, Spring Data JPA, MySQL, Flyway (database migrations)
-Real-time bidding: WebSockets (STOMP)
-Payments: Razorpay
-Frontend: React, React Router, Leaflet (maps)
-Containers: Docker & Docker Compose
-🚀 Running the project
+  * Allows farmers to create and manage crop lots.
+  * Stores crop quantity, price, and market-rate details.
 
-Each service can be run individually, or together using Docker.
+* **bidding-service — Port 8083**
 
-bash
-# Clone the project
-git clone <this-repo-url>
-cd farmatrade
+  * Provides live crop auctions.
+  * Allows buyers to place bids in real time using **WebSockets**.
 
-# Start everything with Docker Compose
-docker-compose up --build
+* **logistics-service — Port 8084**
 
-To run a single backend service on its own (for example auth-service):
+  * Manages truck booking for crop delivery.
+  * Finds nearby cold-storage facilities.
+  * Performs weather-risk checks for transportation.
 
-bash
+* **billing-service — Port 8085**
+
+  * Generates invoices after successful sales.
+  * Handles online payments through **Razorpay**.
+
+* **frontend — Port 3000**
+
+  * React-based web application.
+  * Provides the user interface for **farmers, buyers, and administrators**.
+
+Each backend service is an independent **Spring Boot application** with its own database.
+
+---
+
+## 🔑 Authentication & Authorization
+
+Authentication is centralized through `auth-service`.
+
+1. A user registers or logs in through `auth-service`.
+2. The service generates a secure **JWT**.
+3. Other microservices validate the JWT to identify the user.
+4. Role-based access control determines whether the user is a **FARMER**, **BUYER**, or **ADMIN**.
+5. Other services do not directly access the Auth database.
+
+This keeps authentication and authorization centralized while allowing the other services to remain independent.
+
+---
+
+## 🔄 Typical Sale Flow
+
+```text
+Farmer
+   │
+   ▼
+Lot Service
+Create Crop Lot
+   │
+   ▼
+Bidding Service
+Live Auction
+   │
+   ▼
+Winning Bid
+   │
+   ▼
+Billing Service
+Invoice + Payment
+   │
+   ▼
+Logistics Service
+Truck + Cold Storage
+   │
+   ▼
+Crop Delivered
+```
+
+### Example
+
+A farmer creates a lot:
+
+> **500 kg Tomatoes — ₹20/kg**
+
+The typical flow is:
+
+1. `lot-service` creates the crop lot.
+2. `bidding-service` opens the auction.
+3. Buyers place live bids.
+4. The highest bid wins.
+5. `billing-service` generates the invoice and processes payment.
+6. `logistics-service` arranges transportation and cold storage if required.
+7. The crop is delivered to the buyer.
+
+---
+
+## 🛠️ Technology Stack
+
+### Backend
+
+* **Java**
+* **Spring Boot**
+* **Spring Security**
+* **Spring Data JPA**
+* **MySQL**
+* **Flyway**
+
+### Real-Time Communication
+
+* **WebSockets**
+* **STOMP**
+
+### Payments
+
+* **Razorpay**
+
+### Frontend
+
+* **React**
+* **React Router**
+* **Leaflet**
+
+### DevOps & Infrastructure
+
+* **Docker**
+* **Docker Compose**
+
+---
+
+## 🚀 Running the Project
+
+### Prerequisites
+
+Make sure the following are installed:
+
+* Java 21
+* Maven
+* Node.js
+* npm
+* Docker Desktop
+* Git
+
+---
+
+## 🐳 Run Using Docker
+
+FarmaTrade uses Docker Compose for running the individual microservices and their databases.
+
+### 1. Clone the Repository
+
+```bash
+git clone <YOUR_GITHUB_REPOSITORY_URL>
+cd farmatrade-main
+```
+
+---
+
+### 2. Create the Shared Docker Network
+
+Create the shared network once:
+
+```bash
+docker network create farmatrade-net
+```
+
+If the network already exists, you can continue.
+
+---
+
+## 🔐 3. Start Auth Service
+
+Auth Service should be started first because the other services validate JWT tokens against it.
+
+```bash
 cd auth-service
-./mvnw spring-boot:run
+docker compose -f docker-compose.dev.yml up -d --build
+```
 
-To run the frontend on its own:
+Check the service:
 
-bash
-cd frontend
+```bash
+docker compose -f docker-compose.dev.yml ps
+```
+
+Verify the health endpoint:
+
+```bash
+curl http://localhost:8081/actuator/health
+```
+
+Expected response:
+
+```json
+{
+  "status": "UP"
+}
+```
+
+---
+
+## 🌾 4. Start Lot Service
+
+```bash
+cd ../lot-service
+docker compose up -d --build
+```
+
+Check:
+
+```bash
+docker compose ps
+```
+
+---
+
+## 🔨 5. Start Bidding Service
+
+```bash
+cd ../bidding-service
+docker compose -f docker-compose.dev.yml up -d --build
+```
+
+Check:
+
+```bash
+docker compose -f docker-compose.dev.yml ps
+```
+
+---
+
+## 🚚 6. Start Logistics Service
+
+```bash
+cd ../logistics-service
+docker compose up -d --build
+```
+
+Check:
+
+```bash
+docker compose ps
+```
+
+---
+
+## 💳 7. Start Billing Service
+
+Billing Service requires Razorpay configuration.
+
+Set your **Razorpay Test Mode** credentials in your local environment:
+
+```bash
+export RAZORPAY_KEY_ID="your_test_key_id"
+export RAZORPAY_KEY_SECRET="your_test_key_secret"
+export RAZORPAY_WEBHOOK_SECRET="your_webhook_secret"
+```
+
+Then start Billing:
+
+```bash
+cd ../billing-service
+docker compose up -d --build
+```
+
+Check:
+
+```bash
+docker compose ps
+```
+
+> **Important:** Do not commit Razorpay credentials, passwords, private keys, or other secrets to GitHub.
+
+---
+
+## 💻 8. Start Frontend
+
+The frontend runs separately from Docker.
+
+```bash
+cd ../frontend
 npm install
 npm start
+```
 
-Note: Each service also has its own docker-compose.dev.yml / README.md with more setup details (like environment variables and database setup).
+Open the application:
 
-📁 Project structure
-farmatrade/
-├── auth-service/        # Login, signup, roles, JWT
-├── lot-service/          # Crop lot listings
-├── bidding-service/       # Live auctions
-├── logistics-service/     # Truck booking & cold storage
-├── billing-service/        # Invoices & payments
-├── frontend/                # React website
-└── docker-compose.yml
+```text
+http://localhost:3000
+```
+
+---
+
+## 🔍 Verify All Services
+
+From the project root:
+
+```bash
+cd ~/farmatrade-main
+docker ps
+```
+
+The application services use the following ports:
+
+* **Auth Service:** `8081`
+* **Lot Service:** `8082`
+* **Bidding Service:** `8083`
+* **Logistics Service:** `8084`
+* **Billing Service:** `8085`
+* **Frontend:** `3000`
+
+---
+
+## 🔌 Service Communication
+
+The backend services communicate through the shared `farmatrade-net` Docker network.
+
+```text
+                       ┌─────────────────┐
+                       │   Auth Service  │
+                       │      :8081      │
+                       └────────┬────────┘
+                                │
+                              JWT/JWKS
+                                │
+             ┌──────────────────┼──────────────────┐
+             │                  │                  │
+             ▼                  ▼                  ▼
+     ┌──────────────┐   ┌──────────────┐   ┌──────────────┐
+     │ Lot Service  │   │   Bidding    │   │  Logistics   │
+     │    :8082     │   │   Service    │   │   Service    │
+     │              │   │    :8083     │   │    :8084     │
+     └──────────────┘   └──────┬───────┘   └──────────────┘
+                                │
+                                ▼
+                       ┌─────────────────┐
+                       │ Billing Service │
+                       │      :8085      │
+                       └─────────────────┘
+
+                       ┌─────────────────┐
+                       │ React Frontend  │
+                       │      :3000      │
+                       └─────────────────┘
+```
+
+---
+
+## 🗄️ Database Configuration
+
+Each backend service uses its own MySQL database.
+
+* **Auth Service MySQL:** Host port `3307`
+* **Logistics Service MySQL:** Host port `3308`
+* **Billing Service MySQL:** Host port `3309`
+* **Lot Service MySQL:** Host port `3310`
+* **Bidding Service MySQL:** Host port `3311`
+
+This separation keeps each microservice's data independent.
+
+---
+
+## 🔐 Environment Variables
+
+Sensitive configuration should be provided through environment variables rather than committed to source control.
+
+Examples include:
+
+```text
+RAZORPAY_KEY_ID
+RAZORPAY_KEY_SECRET
+RAZORPAY_WEBHOOK_SECRET
+INTERNAL_SERVICE_TOKEN
+DB_USERNAME
+DB_PASSWORD
+AUTH_RSA_PRIVATE_KEY
+```
+
+For local development, configure these variables in your terminal or local `.env` files.
+
+**Never commit actual secrets to GitHub.**
+
+---
+
+## 📁 Project Structure
+
+```text
+farmatrade-main/
+│
+├── auth-service/
+│   ├── src/
+│   ├── Dockerfile
+│   ├── docker-compose.dev.yml
+│   └── secrets/
+│
+├── lot-service/
+│   ├── src/
+│   ├── Dockerfile
+│   └── docker-compose.yml
+│
+├── bidding-service/
+│   ├── src/
+│   ├── Dockerfile
+│   └── docker-compose.dev.yml
+│
+├── logistics-service/
+│   ├── src/
+│   ├── Dockerfile
+│   └── docker-compose.yml
+│
+├── billing-service/
+│   ├── src/
+│   ├── Dockerfile
+│   └── docker-compose.yml
+│
+├── frontend/
+│   ├── src/
+│   ├── public/
+│   └── package.json
+│
+├── .gitignore
+└── README.md
+```
+
+---
+
+## 📌 Port Reference
+
+* **Frontend:** `3000`
+* **Auth Service:** `8081`
+* **Lot Service:** `8082`
+* **Bidding Service:** `8083`
+* **Logistics Service:** `8084`
+* **Billing Service:** `8085`
+
+---
+
+## 🔒 Security
+
+FarmaTrade uses centralized authentication and role-based authorization.
+
+* JWT-based authentication
+* Role-based access control
+* RSA-based JWT signing
+* Service-to-service authentication
+* Environment-based configuration
+* Docker secrets for sensitive credentials
+* Separate databases for each microservice
+
+---
+
+## 🌱 Key Features
+
+* 👨‍🌾 Farmer registration and crop listing
+* 🛒 Buyer registration and crop discovery
+* 🔨 Live crop auctions
+* ⚡ Real-time bidding using WebSockets
+* 🧾 Automatic invoice generation
+* 💳 Razorpay payment integration
+* 🚚 Truck booking
+* ❄️ Cold-storage discovery
+* 🌦️ Weather-risk checking
+* 🔐 JWT authentication and role-based authorization
+* 🐳 Dockerized microservices
+* 🗄️ Independent database per service
+
+---
+
+## 🎯 Project Goal
+
+FarmaTrade aims to provide a **transparent, technology-driven agricultural marketplace** that reduces dependency on traditional commission-agent systems and gives farmers and buyers a direct platform for trading agricultural produce.
+
+---
+
+## 👨‍💻 Project Architecture
+
+**FarmaTrade — Full-Stack Agricultural Marketplace**
+
+Built using:
+
+**Java • Spring Boot • Spring Security • React • MySQL • WebSockets • Docker • Docker Compose • Razorpay**
